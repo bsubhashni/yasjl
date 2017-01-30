@@ -1,16 +1,31 @@
+/*
+ * Copyright (c) 2017 Couchbase, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.subalakr.yasjl;
+
+import static com.github.subalakr.yasjl.JsonParserUtils.*;
 
 import io.netty.buffer.ByteBufProcessor;
 
 /**
- * Created by subhashni on 1/29/17.
+ * Processes JSON ws
+ *
+ * @author Subhashni Balakrishnan
  */
 public class JsonWhiteSpaceByteBufProcessor implements ByteBufProcessor {
-
-	private final byte WS_SPACE = (byte)0x20;
-	private final byte WS_TAB = (byte)0X09;
-	private final byte WS_LF = (byte)0x0A;
-	private final byte WS_CR = (byte)0x0D;
 
 	public boolean process(byte value) throws Exception {
 		switch(value) {

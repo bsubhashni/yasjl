@@ -1,14 +1,31 @@
+/*
+ * Copyright (c) 2017 Couchbase, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.subalakr.yasjl;
 
+import static com.github.subalakr.yasjl.JsonParserUtils.*;
 
 import io.netty.buffer.ByteBufProcessor;
 
 /**
- * Created by subhashni on 1/29/17.
+ * Processes JSON String value
+ *
+ * @author Subhashni Balakrishnan
  */
 public class JsonStringByteBufProcessor implements ByteBufProcessor {
-	private final byte closingChar = (byte)'"';
-	private final byte escape = (byte)'\\';
 	private State currentState;
 
 	private enum State {
@@ -25,14 +42,14 @@ public class JsonStringByteBufProcessor implements ByteBufProcessor {
 
 	public boolean process(byte value) throws Exception {
 		switch(value) {
-			case escape:
+			case JSON_ES:
 				if (this.currentState == State.UNESCAPED) {
 					this.currentState = State.ESCAPED;
 				} else {
 					this.currentState = State.UNESCAPED;
 				}
 				return true;
-			case closingChar:
+			case JSON_ST:
 				if (this.currentState == State.ESCAPED) {
 					this.currentState = State.UNESCAPED;
 					return true;

@@ -1,10 +1,24 @@
+/*
+ * Copyright (c) 2017 Couchbase, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.subalakr.yasjl;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.github.subalakr.yasjl.JsonPointer;
-import rx.subjects.Subject;
+import com.github.subalakr.yasjl.Callbacks.JsonPointerCB;
 
 /**
  * @author Subhashni Balakrishnan
@@ -36,8 +50,10 @@ public class JsonPointerTree {
 		for(int i=1; i < jpRefTokens.size(); i++){
 			Node childMatch = parent.match(jpRefTokens.get(i));
 			if (childMatch == null) {
-				parent = parent.addChild(jpRefTokens.get(i), jp.subject());
+				parent = parent.addChild(jpRefTokens.get(i), jp.jsonPointerCB());
 				pathDoesNotExist = true;
+			} else {
+				parent = childMatch;
 			}
 		}
 		return pathDoesNotExist;
@@ -82,7 +98,7 @@ public class JsonPointerTree {
 			}
 		}
 		if (node != null && node.children == null) {
-			jp.subject(node.subject);
+			jp.jsonPointerCB(node.jsonPointerCB);
 			return true;
 		} else {
 			return false;
@@ -95,18 +111,18 @@ public class JsonPointerTree {
 	class Node {
 		private String value;
 		private List<Node> children;
-		private Subject subject;
+		private JsonPointerCB jsonPointerCB;
 
-		public Node(String value, Subject subject) {
+		public Node(String value, JsonPointerCB jsonPointerCB) {
 			this.value = value;
 			this.children = null;
-			this.subject = subject;
+			this.jsonPointerCB = jsonPointerCB;
 		}
-		public Node addChild(String value,  Subject subject) {
+		public Node addChild(String value,  JsonPointerCB jsonPointerCB) {
 			if (children == null) {
 				children = new ArrayList<Node>();
 			}
-			Node child = new Node(value, subject);
+			Node child = new Node(value, jsonPointerCB);
 			children.add(child);
 			return child;
 		}

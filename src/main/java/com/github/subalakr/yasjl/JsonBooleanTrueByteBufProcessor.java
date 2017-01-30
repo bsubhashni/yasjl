@@ -19,34 +19,43 @@ package com.github.subalakr.yasjl;
 import io.netty.buffer.ByteBufProcessor;
 
 /**
- * Processes byte order mark. It supports only UTF-8.
+ * Processes JSON true value
  *
  * @author Subhashni Balakrishnan
  */
-public class JsonBOMByteBufProcessor implements ByteBufProcessor {
-	private final byte BOM1 = (byte)0xEF;
-	private final byte BOM2 = (byte)0xBB;
-	private final byte BOM3 = (byte)0xBF;
+public class JsonBooleanTrueByteBufProcessor implements ByteBufProcessor {
+	private final byte T1 = (byte)'t';
+	private final byte T2 = (byte)'r';
+	private final byte T3 = (byte)'u';
+	private final byte T4 = (byte)'e';
+
 	private byte lastValue;
 
-	public JsonBOMByteBufProcessor() {
-		this.lastValue = BOM1;
+	public JsonBooleanTrueByteBufProcessor() {
+		this.lastValue = T1;
 	}
 
-	private void reset() {
-		this.lastValue = BOM1;
+	public void reset() {
+		this.lastValue = T1;
 	}
 
 	public boolean process(byte value) throws Exception {
-		switch(value) {
-			case BOM2:
-				if (this.lastValue == BOM1) {
-					this.lastValue = BOM2;
+		switch (value) {
+			case T2:
+				if (this.lastValue == T1) {
+					this.lastValue = T2;
 					return true;
 				}
 				break;
-			case BOM3:
-				if (this.lastValue == BOM2) {
+			case T3:
+				if (this.lastValue == T2) {
+					this.lastValue = T3;
+					return true;
+				}
+				break;
+			case T4:
+				if (this.lastValue == T3) {
+					reset();
 					return false;
 				}
 				break;

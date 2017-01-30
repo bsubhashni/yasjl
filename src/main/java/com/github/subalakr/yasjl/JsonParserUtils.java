@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2017 Couchbase, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.subalakr.yasjl;
 
 /**
@@ -12,7 +28,8 @@ public class JsonParserUtils {
 		JSON_ARRAY_VALUE,
 		JSON_STRING_HASH_KEY,
 		JSON_STRING_VALUE,
-		JSON_BOOLEAN_VALUE,
+		JSON_BOOLEAN_TRUE_VALUE,
+		JSON_BOOLEAN_FALSE_VALUE,
 		JSON_NUMBER_VALUE,
 		JSON_NULL_VALUE,
 		BOM
@@ -34,6 +51,12 @@ public class JsonParserUtils {
 	protected static final byte JSON_MINUS = (byte)'-';
 	protected static final byte JSON_PLUS = (byte)'+';
 	protected static final byte JSON_ZERO = (byte)'0';
+
+	protected static final byte WS_SPACE = (byte)0x20;
+	protected static final byte WS_TAB = (byte)0X09;
+	protected static final byte WS_LF = (byte)0x0A;
+	protected static final byte WS_CR = (byte)0x0D;
+
 
 	protected static boolean isNumber(byte value) {
 		switch(value) {

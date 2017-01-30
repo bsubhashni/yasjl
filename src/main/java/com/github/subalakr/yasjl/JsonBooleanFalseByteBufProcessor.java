@@ -19,34 +19,50 @@ package com.github.subalakr.yasjl;
 import io.netty.buffer.ByteBufProcessor;
 
 /**
- * Processes byte order mark. It supports only UTF-8.
+ * Processes JSON false value
  *
  * @author Subhashni Balakrishnan
  */
-public class JsonBOMByteBufProcessor implements ByteBufProcessor {
-	private final byte BOM1 = (byte)0xEF;
-	private final byte BOM2 = (byte)0xBB;
-	private final byte BOM3 = (byte)0xBF;
+public class JsonBooleanFalseByteBufProcessor implements ByteBufProcessor {
+	private final byte F1 = (byte)'f';
+	private final byte F2 = (byte)'a';
+	private final byte F3 = (byte)'l';
+	private final byte F4 = (byte)'s';
+	private final byte F5 = (byte)'e';
+
 	private byte lastValue;
 
-	public JsonBOMByteBufProcessor() {
-		this.lastValue = BOM1;
+	public JsonBooleanFalseByteBufProcessor() {
+		this.lastValue = F1;
 	}
 
-	private void reset() {
-		this.lastValue = BOM1;
+	public void reset() {
+		this.lastValue = F1;
 	}
 
 	public boolean process(byte value) throws Exception {
-		switch(value) {
-			case BOM2:
-				if (this.lastValue == BOM1) {
-					this.lastValue = BOM2;
+		switch (value) {
+			case F2:
+				if (this.lastValue == F1) {
+					this.lastValue = F2;
 					return true;
 				}
 				break;
-			case BOM3:
-				if (this.lastValue == BOM2) {
+			case F3:
+				if (this.lastValue == F2) {
+					this.lastValue = F3;
+					return true;
+				}
+				break;
+			case F4:
+				if (this.lastValue == F3) {
+					this.lastValue = F4;
+					return true;
+				}
+				break;
+			case F5:
+				if (this.lastValue == F4) {
+					reset();
 					return false;
 				}
 				break;

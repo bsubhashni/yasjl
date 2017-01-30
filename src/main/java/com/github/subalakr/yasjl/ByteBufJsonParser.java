@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2017 Couchbase, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.subalakr.yasjl;
 
 import java.nio.charset.Charset;
@@ -5,10 +21,11 @@ import java.util.Stack;
 import static com.github.subalakr.yasjl.JsonParserUtils.*;
 import static com.github.subalakr.yasjl.JsonParserUtils.Mode.JSON_NUMBER_VALUE;
 
+import com.github.subalakr.yasjl.Callbacks.JsonPointerCB;
+import com.github.subalakr.yasjl.Callbacks.JsonPointerCB1;
+import com.github.subalakr.yasjl.Callbacks.JsonPointerCB2;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufProcessor;
-import rx.subjects.Subject;
-
 import java.io.EOFException;
 
 /**
@@ -30,6 +47,8 @@ public class ByteBufJsonParser {
 	private JsonNullByteBufProcessor nullProcessor;
 	private JsonBOMByteBufProcessor bomProcessor;
 	private JsonNumberByteBufProcessor numProcessor;
+	private JsonBooleanTrueByteBufProcessor trueProcessor;
+	private JsonBooleanFalseByteBufProcessor falseProcessor;
 	private byte currentChar;
 	private boolean startedStreaming;
 
@@ -41,7 +60,8 @@ public class ByteBufJsonParser {
 		nullProcessor = new JsonNullByteBufProcessor();
 		bomProcessor = new JsonBOMByteBufProcessor();
 		numProcessor = new JsonNumberByteBufProcessor();
-
+		trueProcessor = new JsonBooleanTrueByteBufProcessor();
+		falseProcessor = new JsonBooleanFalseByteBufProcessor();
 	}
 
 	public void initialize(ByteBuf content, JsonPointer[] jsonPointers) throws Exception {
@@ -94,7 +114,8 @@ public class ByteBufJsonParser {
 					case JSON_ARRAY_VALUE:
 					case JSON_STRING_HASH_KEY:
 					case JSON_STRING_VALUE:
-					case JSON_BOOLEAN_VALUE:
+					case JSON_BOOLEAN_TRUE_VALUE:
+					case JSON_BOOLEAN_FALSE_VALUE:
 					case JSON_NUMBER_VALUE:
 					case JSON_NULL_VALUE:
 						readValue(currentLevel);
@@ -169,11 +190,18 @@ public class ByteBufJsonParser {
 				level.pushMode(Mode.JSON_ARRAY_VALUE);
 				readValue(level);
 			}
-			if (this.currentChar == JSON_T || this.currentChar == JSON_F) {
+			if (this.currentChar == JSON_T) {
 				if (!level.isHashValue()) {
 					throw new IllegalStateException();
 				}
-				level.pushMode(Mode.JSON_BOOLEAN_VALUE);
+				level.pushMode(Mode.JSON_BOOLEAN_TRUE_VALUE);
+				readValue(level);
+			}
+			if (this.currentChar == JSON_F) {
+				if (!level.isHashValue()) {
+					throw new IllegalStateException();
+				}
+				level.pushMode(Mode.JSON_BOOLEAN_FALSE_VALUE);
 				readValue(level);
 			}
 			if (this.currentChar == JSON_N) {
@@ -224,8 +252,12 @@ public class ByteBufJsonParser {
 					readValue(level);
 				}
 			}
-			if (this.currentChar == JSON_T || this.currentChar == JSON_F) {
-				level.pushMode(Mode.JSON_BOOLEAN_VALUE);
+			if (this.currentChar == JSON_T) {
+				level.pushMode(Mode.JSON_BOOLEAN_TRUE_VALUE);
+				readValue(level);
+			}
+			if (this.currentChar == JSON_F) {
+				level.pushMode(Mode.JSON_BOOLEAN_FALSE_VALUE);
 				readValue(level);
 			}
 			if (this.currentChar == JSON_N) {
@@ -270,9 +302,11 @@ public class ByteBufJsonParser {
 				nullProcessor.reset();
 				processor = nullProcessor;
 				break;
-			//TODO: boolean processor
-			case JSON_BOOLEAN_VALUE:
-				processor = null;
+			case JSON_BOOLEAN_TRUE_VALUE:
+				processor = trueProcessor;
+				break;
+			case JSON_BOOLEAN_FALSE_VALUE:
+				processor = falseProcessor;
 				break;
 			case JSON_NUMBER_VALUE:
 				processor = numProcessor;
@@ -282,7 +316,7 @@ public class ByteBufJsonParser {
 		int lastValidIndex = this.content.forEachByte(processor);
 		if (lastValidIndex == -1) {
 			if(mode != JSON_NUMBER_VALUE) {
-				throw new EOFException("Need more input for " + level.jsonPointer.toString());
+				throw new EOFException("Needs more input (Level: " + level.jsonPointer().toString() + ")");
 			} else {
 				length = 1;
 				ByteBuf slice = this.content.slice(readerIndex - 1, length);
@@ -294,7 +328,9 @@ public class ByteBufJsonParser {
 					mode == Mode.JSON_ARRAY_VALUE ||
 					mode == Mode.JSON_STRING_VALUE ||
 					mode == Mode.JSON_STRING_HASH_KEY ||
-					mode == Mode.JSON_NULL_VALUE) {
+					mode == Mode.JSON_NULL_VALUE ||
+					mode == Mode.JSON_BOOLEAN_TRUE_VALUE ||
+					mode == Mode.JSON_BOOLEAN_FALSE_VALUE) {
 				length = lastValidIndex - readerIndex + 1;
 				ByteBuf slice = this.content.slice(readerIndex - 1, length + 1);
 				level.setCurrentValue(slice.copy(), length);
@@ -349,7 +385,7 @@ public class ByteBufJsonParser {
 	}
 
 	/**
-	 * JsonLevel can be a nesting level of an json object or an json array
+	 * JsonLevel can be a nesting level of an json object or json array
 	 *
 	 */
 	class JsonLevel {
@@ -417,14 +453,16 @@ public class ByteBufJsonParser {
 
 		public void emitJsonPointerValue(boolean shouldEmit){
 			if (shouldEmit && (this.isHashValue || this.isArray)) {
-				if (this.jsonPointer.subject() != null) {
-					this.jsonPointer.subject().onNext(this.currentValue);
+				if (this.jsonPointer.jsonPointerCB() != null) {
+					JsonPointerCB cb = this.jsonPointer.jsonPointerCB();
+					if (cb instanceof JsonPointerCB1) {
+						((JsonPointerCB1) cb).call(this.currentValue);
+					} else if (cb instanceof JsonPointerCB2) {
+						((JsonPointerCB2) cb).call(this.jsonPointer, this.currentValue);
+					}
 				} else {
-					/*System.out.println("Path: " + this.jsonPointer.toString() + "\t" +
-							"Value: " + this.currentValue.toString(Charset.defaultCharset()));
-							*/
+					this.currentValue.release();
 				}
-
 			} else {
 				this.currentValue.release();
 			}

@@ -1,9 +1,28 @@
+/*
+ * Copyright (c) 2017 Couchbase, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.subalakr.yasjl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import rx.subjects.Subject;
+
+import com.github.subalakr.yasjl.Callbacks.JsonPointerCB;
+import com.github.subalakr.yasjl.Callbacks.JsonPointerCB1;
+import com.github.subalakr.yasjl.Callbacks.JsonPointerCB2;
 
 /**
  * Represents a pointer
@@ -12,7 +31,7 @@ import rx.subjects.Subject;
  */
 public class JsonPointer {
 	private List<String> refTokens;
-	private Subject subject;
+	private JsonPointerCB jsonPointerCB;
 
 	protected JsonPointer(){
 		this.refTokens = new ArrayList<String>();
@@ -27,14 +46,14 @@ public class JsonPointer {
 		parseComponents(path);
 	}
 
-	public JsonPointer(final String path, Subject subject) {
+	public JsonPointer(final String path, JsonPointerCB jsonPointerCB) {
 		parseComponents(path);
-		this.subject = subject;
+		this.jsonPointerCB = jsonPointerCB;
 	}
 
 	public void parseComponents(String path) {
 		this.refTokens = new ArrayList<String>();
-		//split by path each separated by "\"
+		//split by path each separated by "/"
 		String[] splitted = path.split("/");
 		if (splitted.length > 31) {
 			throw new IllegalArgumentException("path contains too many levels of nesting");
@@ -55,12 +74,12 @@ public class JsonPointer {
 		return this.refTokens;
 	}
 
-	protected Subject subject() {
-		return this.subject;
+	protected JsonPointerCB jsonPointerCB() {
+		return this.jsonPointerCB;
 	}
 
-	protected void subject(Subject subject) {
-		this.subject = subject;
+	protected void jsonPointerCB(JsonPointerCB jsonPointerCB) {
+		this.jsonPointerCB = jsonPointerCB;
 	}
 
 	private String getPath() {
