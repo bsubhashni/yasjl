@@ -281,6 +281,7 @@ public class ByteBufJsonParser {
 	}
 
 	private void readValue(JsonLevel level) throws Exception {
+
 		int readerIndex = this.content.readerIndex();
 		ByteBufProcessor processor = null;
 		Mode mode = level.peekMode();
@@ -313,6 +314,8 @@ public class ByteBufJsonParser {
 				break;
 		}
 		int length;
+		boolean shouldSaveValue = this.tree.isTerminalPath(level.jsonPointer()) || mode == Mode.JSON_STRING_HASH_KEY;
+
 		int lastValidIndex = this.content.forEachByte(processor);
 		if (lastValidIndex == -1) {
 			if(mode != JSON_NUMBER_VALUE) {
@@ -322,6 +325,7 @@ public class ByteBufJsonParser {
 				ByteBuf slice = this.content.slice(readerIndex - 1, length);
 				level.setCurrentValue(slice.copy(), length);
 				//no need to skip here
+				level.emitJsonPointerValue();
 			}
 		} else {
 			if(mode == Mode.JSON_OBJECT_VALUE ||
@@ -331,26 +335,35 @@ public class ByteBufJsonParser {
 					mode == Mode.JSON_NULL_VALUE ||
 					mode == Mode.JSON_BOOLEAN_TRUE_VALUE ||
 					mode == Mode.JSON_BOOLEAN_FALSE_VALUE) {
+
 				length = lastValidIndex - readerIndex + 1;
-				ByteBuf slice = this.content.slice(readerIndex - 1, length + 1);
-				level.setCurrentValue(slice.copy(), length);
+				if (shouldSaveValue) {
+					ByteBuf slice = this.content.slice(readerIndex - 1, length + 1);
+					level.setCurrentValue(slice.copy(), length);
+					level.emitJsonPointerValue();
+				}
 				this.content.skipBytes(length);
 			} else {
 				//special handling for number as they don't need structural tokens intact
 				//and the processor returns only on an unacceptable value rather than a finite state automaton
 				length = lastValidIndex - readerIndex;
 				if (length > 0) {
-					ByteBuf slice = this.content.slice(readerIndex - 1, length + 1);
-					level.setCurrentValue(slice.copy(), length);
+					if (shouldSaveValue) {
+						ByteBuf slice = this.content.slice(readerIndex - 1, length + 1);
+						level.setCurrentValue(slice.copy(), length);
+						level.emitJsonPointerValue();
+					}
 					this.content.skipBytes(length);
 				} else {
 					length = 1;
-					ByteBuf slice = this.content.slice(readerIndex - 1, length);
-					level.setCurrentValue(slice.copy(), length);
+					if (shouldSaveValue) {
+						ByteBuf slice = this.content.slice(readerIndex - 1, length);
+						level.setCurrentValue(slice.copy(), length);
+						level.emitJsonPointerValue();
+					}
 				}
 			}
 		}
-		level.emitJsonPointerValue(this.tree.isTerminalPath(level.jsonPointer()));
 		this.content.discardReadBytes();
 
 		if (mode != Mode.JSON_STRING_HASH_KEY) {
@@ -451,17 +464,13 @@ public class ByteBufJsonParser {
 			this.jsonPointer.removeToken();
 		}
 
-		public void emitJsonPointerValue(boolean shouldEmit){
-			if (shouldEmit && (this.isHashValue || this.isArray)) {
-				if (this.jsonPointer.jsonPointerCB() != null) {
-					JsonPointerCB cb = this.jsonPointer.jsonPointerCB();
-					if (cb instanceof JsonPointerCB1) {
-						((JsonPointerCB1) cb).call(this.currentValue);
-					} else if (cb instanceof JsonPointerCB2) {
-						((JsonPointerCB2) cb).call(this.jsonPointer, this.currentValue);
-					}
-				} else {
-					this.currentValue.release();
+		public void emitJsonPointerValue(){
+			if ((this.isHashValue || this.isArray) && this.jsonPointer.jsonPointerCB() != null){
+				JsonPointerCB cb = this.jsonPointer.jsonPointerCB();
+				if (cb instanceof JsonPointerCB1) {
+					((JsonPointerCB1) cb).call(this.currentValue);
+				} else if (cb instanceof JsonPointerCB2) {
+					((JsonPointerCB2) cb).call(this.jsonPointer, this.currentValue);
 				}
 			} else {
 				this.currentValue.release();
