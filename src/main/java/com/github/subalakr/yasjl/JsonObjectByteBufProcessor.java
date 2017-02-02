@@ -39,6 +39,7 @@ public class JsonObjectByteBufProcessor implements ByteBufProcessor {
 	public void reset() {
 		this.count = 1;
 		this.isString = false;
+		this.stProcessor.reset();
 	}
 
 	public boolean process(byte value) throws Exception {

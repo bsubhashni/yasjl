@@ -38,6 +38,7 @@ public class JsonArrayByteBufProcessor implements ByteBufProcessor {
 	public void reset() {
 		this.isString = false;
 		this.count = 1;
+		this.stProcessor.reset();
 	}
 
 	public boolean process(byte value) throws Exception {
