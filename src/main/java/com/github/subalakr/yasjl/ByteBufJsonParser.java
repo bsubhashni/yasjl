@@ -399,7 +399,6 @@ public class ByteBufJsonParser {
 
 	/**
 	 * JsonLevel can be a nesting level of an json object or json array
-	 *
 	 */
 	class JsonLevel {
 		private Stack<Mode> modes;

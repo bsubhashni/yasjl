@@ -58,6 +58,9 @@ public class JsonStringByteBufProcessor implements ByteBufProcessor {
 					return false;
 				}
 			default:
+				if (this.currentState == State.ESCAPED) {
+					this.currentState = State.UNESCAPED;
+				}
 				return true;
 		}
 	}
