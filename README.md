@@ -38,19 +38,21 @@ parser.parse();
 ```
 
 #### Simple benchmark results
-size: 3.2 MB,       level-depth: 2,     time: 2327ms
-size: 429.2 kB,     level-depth: 4,     time: 93ms
-size: 9.7 MB,       level-depth: 5,     time: 102ms
-size: 9.7 MB,       level-depth: 5,     time: 55ms
-size: 16.8 kB,      level-depth: 2,     time: 1ms
-size: 874 B,        level-depth: 4,     time: 0ms
-size: 775 B,        level-depth: 5,     time: 0ms
-size: 243 B,        level-depth: 4,     time: 0ms
-size: 3.5 kB,       level-depth: 4,     time: 1ms
-size: 4.2 kB,       level-depth: 4,     time: 0ms
-size: 602 B,        level-depth: 4,     time: 0ms
-size: 1.1 kB,       level-depth: 6,     time: 0ms
-size: 1.4 kB,       level-depth: 5,     time: 0ms
-size: 18.4 kB,      level-depth: 5,     time: 1ms
-size: 39.5 kB,      level-depth: 4,     time: 2ms
-size: 1.2 kB,       level-depth: 6,     time: 0ms
+```
+ size: 3.2 MB,       level-depth: 2,     time: 2327ms
+ size: 429.2 kB,     level-depth: 4,     time: 93ms
+ size: 9.7 MB,       level-depth: 5,     time: 102ms
+ size: 9.7 MB,       level-depth: 5,     time: 55ms
+ size: 16.8 kB,      level-depth: 2,     time: 1ms
+ size: 874 B,        level-depth: 4,     time: 0ms
+ size: 775 B,        level-depth: 5,     time: 0ms
+ size: 243 B,        level-depth: 4,     time: 0ms
+ size: 3.5 kB,       level-depth: 4,     time: 1ms
+ size: 4.2 kB,       level-depth: 4,     time: 0ms
+ size: 602 B,        level-depth: 4,     time: 0ms
+ size: 1.1 kB,       level-depth: 6,     time: 0ms
+ size: 1.4 kB,       level-depth: 5,     time: 0ms
+ size: 18.4 kB,      level-depth: 5,     time: 1ms
+ size: 39.5 kB,      level-depth: 4,     time: 2ms
+ size: 1.2 kB,       level-depth: 6,     time: 0ms
+```
