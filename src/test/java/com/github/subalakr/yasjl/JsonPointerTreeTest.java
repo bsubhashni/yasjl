@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * @Subhashni Balakrishnan
+ * @author Subhashni Balakrishnan
  */
 public class JsonPointerTreeTest {
 

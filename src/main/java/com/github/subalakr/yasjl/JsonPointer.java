@@ -30,81 +30,83 @@ import com.github.subalakr.yasjl.Callbacks.JsonPointerCB2;
  * @author Subhashni Balakrishnan
  */
 public class JsonPointer {
-	private List<String> refTokens;
-	private JsonPointerCB jsonPointerCB;
+    private List<String> refTokens;
+    private JsonPointerCB jsonPointerCB;
 
-	protected JsonPointer(){
-		this.refTokens = new ArrayList<String>();
-		this.addToken(""); //token for root
-	}
+    protected JsonPointer(){
+        this.refTokens = new ArrayList<String>();
+        this.addToken(""); //token for root
+    }
 
-	public JsonPointer(final List<String> refTokens) {
-		this.refTokens = new ArrayList(refTokens);
-	}
+    public JsonPointer(final List<String> refTokens) {
+        this.refTokens = new ArrayList(refTokens);
+    }
 
-	public JsonPointer(final String path) {
-		parseComponents(path);
-	}
+    public JsonPointer(final String path) {
+        parseComponents(path);
+    }
 
-	public JsonPointer(final String path, JsonPointerCB jsonPointerCB) {
-		parseComponents(path);
-		this.jsonPointerCB = jsonPointerCB;
-	}
+    public JsonPointer(final String path, JsonPointerCB jsonPointerCB) {
+        parseComponents(path);
+        this.jsonPointerCB = jsonPointerCB;
+    }
 
-	public void parseComponents(String path) {
-		this.refTokens = new ArrayList<String>();
-		//replace ~1 by /
+    public void parseComponents(String path) {
+        this.refTokens = new ArrayList<String>();
+        //replace ~1 by /
 
-		//split by path each separated by "/"
-		String[] tokens = path.split("/");
+        //split by path each separated by "/"
+        String[] tokens = path.split("/");
 
-		if (tokens.length > 31) {
-			throw new IllegalArgumentException("path contains too many levels of nesting");
-		}
+        if (tokens.length > 31) {
+            throw new IllegalArgumentException("path contains too many levels of nesting");
+        }
 
-		for (int i=0; i < tokens.length; i++) {
-			tokens[i] = tokens[i].replace("~1","/").replace("~0","~");
-		}
+        for (int i=0; i < tokens.length; i++) {
+            tokens[i] = tokens[i].replace("~1","/").replace("~0","~");
+        }
 
-		this.refTokens.addAll(Arrays.asList(tokens));
-	}
+        this.refTokens.addAll(Arrays.asList(tokens));
+    }
 
-	protected void addToken(String token) {
-		this.refTokens.add(token);
-	}
+    protected void addToken(String token) {
+        this.refTokens.add(token);
+    }
 
-	protected void removeToken() {
-		this.refTokens.remove(this.refTokens.size()-1);
-	}
+    protected void removeToken() {
+        if (this.refTokens.size() > 1) {
+            this.refTokens.remove(this.refTokens.size() - 1);
+        }
+    }
 
-	protected List<String> refTokens() {
-		return this.refTokens;
-	}
+    protected List<String> refTokens() {
+        return this.refTokens;
+    }
 
-	protected JsonPointerCB jsonPointerCB() {
-		return this.jsonPointerCB;
-	}
+    protected JsonPointerCB jsonPointerCB() {
+        return this.jsonPointerCB;
+    }
 
-	protected void jsonPointerCB(JsonPointerCB jsonPointerCB) {
-		this.jsonPointerCB = jsonPointerCB;
-	}
+    protected void jsonPointerCB(JsonPointerCB jsonPointerCB) {
+        this.jsonPointerCB = jsonPointerCB;
+    }
 
-	private String getPath() {
-		StringBuilder sb = new StringBuilder();
-		for(String refToken:this.refTokens) {
-			sb.append("/");
-			sb.append(refToken);
-		}
-		return sb.substring(1).toString();
-	}
+    private String getPath() {
+        StringBuilder sb = new StringBuilder();
+        for(String refToken:this.refTokens) {
+            sb.append("/");
+            sb.append(refToken);
+        }
+        return sb.substring(1).toString();
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("JsonPointer{path=");
-		sb.append(getPath());
-		sb.append("}");
-		return sb.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("JsonPointer{path=");
+        sb.append(getPath());
+        sb.append("}");
+        return sb.toString();
+    }
 
 }
