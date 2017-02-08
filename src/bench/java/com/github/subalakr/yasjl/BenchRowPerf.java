@@ -39,7 +39,7 @@ public class BenchRowPerf {
     public void start() {
         parser = new ByteBufJsonParser();
         try {
-            String response = getResource("sample.json");
+           getResource("sample.json");
         } catch (Exception ex) {
             System.err.println("Decompress samples directory in resources folder before running this");
             return;
@@ -87,8 +87,8 @@ public class BenchRowPerf {
         String response = getResource(file);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("size: " + humanReadableByteCount(response.length(), true) + "\t\t");
-        sb.append("level-depth: " + path.split("/").length + "\t");
+        sb.append("size: " + humanReadableByteCount(response.length(), true) + ",\t\t");
+        sb.append("level-depth: " + path.split("/").length + ",\t\t");
         sb.append("time: ");
 
         long start = System.currentTimeMillis();
