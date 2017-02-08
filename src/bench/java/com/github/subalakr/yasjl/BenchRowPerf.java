@@ -45,7 +45,8 @@ public class BenchRowPerf {
             return;
         }
         try {
-            parseLarge();
+            parseBigJson();
+            parseZipsArray();
             parseObjectish();
             parseAuction();
             parseAuction();
@@ -91,7 +92,7 @@ public class BenchRowPerf {
         sb.append("level-depth: " + path.split("/").length + ",\t\t");
         sb.append("time: ");
 
-        long start = System.currentTimeMillis();
+
         JsonPointer[] jsonPointers = {
                 new JsonPointer(path, new JsonPointerCB1() {
                     public void call(ByteBuf buf) {
@@ -102,15 +103,22 @@ public class BenchRowPerf {
         ByteBuf buf = Unpooled.buffer();
         parser.initialize(buf, jsonPointers);
         buf.writeBytes(response.getBytes());
+        long start = System.currentTimeMillis();
         parser.parse();
         long end = System.currentTimeMillis();
         sb.append((end - start) + "ms");
         System.out.println(sb.toString());
     }
 
-    public void parseLarge() throws Exception {
-        parseResults("large.json", "/-");
+
+    public void parseBigJson() throws Exception {
+        parseResults("companies.json", "/");
     }
+
+    public void parseZipsArray() throws Exception {
+        parseResults("large.json", "/-/loc");
+    }
+
 
     public void parseObjectish() throws Exception {
         parseResults("objectish.json", "/databaseReference/-/objectId");

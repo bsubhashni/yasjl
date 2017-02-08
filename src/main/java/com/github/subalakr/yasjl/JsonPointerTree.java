@@ -18,18 +18,22 @@ package com.github.subalakr.yasjl;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.github.subalakr.yasjl.Callbacks.JsonPointerCB;
 
 /**
  * @author Subhashni Balakrishnan
  */
 public class JsonPointerTree {
+
     private Node root;
     private boolean isRootAPointer;
+    private int maxHeight;
 
     public JsonPointerTree() {
         this.root = new Node("", null);
         this.isRootAPointer = false;
+        maxHeight = 1;
     }
 
     /**
@@ -41,13 +45,15 @@ public class JsonPointerTree {
             throw new IllegalArgumentException("Root is a json pointer, other json pointers are not allowed");
         }
         List<String> jpRefTokens = jp.refTokens();
-        if (jpRefTokens.size() == 1) {
+        int jpSize = jpRefTokens.size();
+
+        if (jpSize == 1) {
             isRootAPointer = true;
             return true;
         }
         Node parent = root;
         boolean pathDoesNotExist = false;
-        for(int i=1; i < jpRefTokens.size(); i++){
+        for (int i = 1; i < jpSize; i++) {
             Node childMatch = parent.match(jpRefTokens.get(i));
             if (childMatch == null) {
                 parent = parent.addChild(jpRefTokens.get(i), jp.jsonPointerCB());
@@ -61,12 +67,16 @@ public class JsonPointerTree {
 
     public boolean isIntermediaryPath(JsonPointer jp) throws Exception {
         List<String> jpRefTokens = jp.refTokens();
-        if (jpRefTokens.size() == 1) {
+        int jpSize = jpRefTokens.size();
+        if (jpSize == 1) {
             return false;
         }
 
+        if (jpSize >= maxHeight) {
+            return false;
+        }
         Node node = root;
-        for(int i=1; i < jpRefTokens.size(); i++){
+        for (int i = 1; i < jpSize; i++) {
             Node childMatch = node.match(jpRefTokens.get(i));
             if (childMatch == null) {
                 return false;
@@ -83,13 +93,15 @@ public class JsonPointerTree {
 
     public boolean isTerminalPath(JsonPointer jp) throws Exception {
         List<String> jpRefTokens = jp.refTokens();
+        int jpSize = jpRefTokens.size();
+
         Node node = root;
-        if (jpRefTokens.size() == 1) {
+        if (jpSize == 1) {
             if (node.children == null) {
                 return false;
             }
         }
-        for(int i=1; i < jpRefTokens.size(); i++){
+        for (int i = 1; i < jpSize; i++) {
             Node childMatch = node.match(jpRefTokens.get(i));
             if (childMatch == null) {
                 return false;
@@ -109,6 +121,7 @@ public class JsonPointerTree {
      * Node in the JP tree contains a reference token in Json pointer
      */
     class Node {
+
         private String value;
         private List<Node> children;
         private JsonPointerCB jsonPointerCB;
@@ -118,7 +131,8 @@ public class JsonPointerTree {
             this.children = null;
             this.jsonPointerCB = jsonPointerCB;
         }
-        public Node addChild(String value,  JsonPointerCB jsonPointerCB) {
+
+        public Node addChild(String value, JsonPointerCB jsonPointerCB) {
             if (children == null) {
                 children = new ArrayList<Node>();
             }
@@ -131,7 +145,7 @@ public class JsonPointerTree {
             try {
                 Integer.parseInt(value);
                 return true;
-            } catch(NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 return false;
             }
         }
@@ -140,11 +154,10 @@ public class JsonPointerTree {
             if (this.children == null) {
                 return null;
             }
-            for (Node child:children) {
+            for (Node child : children) {
                 if (child.value.equals(value)) {
                     return child;
-                }
-                if ((child.value.equals("-") && isIndex(value))) {
+                } else if ((child.value.equals("-") && isIndex(value))) {
                     return child;
                 }
             }
