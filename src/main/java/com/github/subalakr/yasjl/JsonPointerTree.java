@@ -28,12 +28,10 @@ public class JsonPointerTree {
 
     private Node root;
     private boolean isRootAPointer;
-    private int maxHeight;
 
     public JsonPointerTree() {
         this.root = new Node("", null);
         this.isRootAPointer = false;
-        maxHeight = 1;
     }
 
     /**
@@ -69,10 +67,6 @@ public class JsonPointerTree {
         List<String> jpRefTokens = jp.refTokens();
         int jpSize = jpRefTokens.size();
         if (jpSize == 1) {
-            return false;
-        }
-
-        if (jpSize >= maxHeight) {
             return false;
         }
         Node node = root;
