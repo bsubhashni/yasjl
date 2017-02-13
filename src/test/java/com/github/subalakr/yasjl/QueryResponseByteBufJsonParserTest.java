@@ -128,19 +128,19 @@ public class QueryResponseByteBufJsonParserTest {
 
 
         if (results.containsKey("resultCount") && results.get("resultCount") > 0) {
-            if (results.get("resultRows") != results.get("resultCount")) {
+            if (!results.get("resultRows").equals(results.get("resultCount"))) {
                 return false;
             }
         }
 
         if (results.containsKey("errorCount") && results.get("errorCount") > 0) {
-            if (results.get("errorRows") != results.get("errorCount")) {
+            if (!results.get("errorRows").equals(results.get("errorCount"))) {
                 return false;
             }
         }
 
         if (results.containsKey("warningCount") && results.get("warningCount") > 0) {
-            if (results.get("warningRows") != results.get("warningCount")) {
+            if (!results.get("warningRows").equals(results.get("warningCount"))) {
                 return false;
             }
         }
