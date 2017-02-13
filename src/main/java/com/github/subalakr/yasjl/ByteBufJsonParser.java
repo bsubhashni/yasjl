@@ -361,7 +361,9 @@ public class ByteBufJsonParser {
                 }
             }
         }
-        this.content.discardReadBytes();
+        //DONT THIS HERE: it should be app to do it after calling parse, or releasing the input
+        //bytebuf
+        //this.content.discardReadBytes();
 
         if (mode != Mode.JSON_STRING_HASH_KEY) {
             level.removeLastTokenFromJsonPointer();
