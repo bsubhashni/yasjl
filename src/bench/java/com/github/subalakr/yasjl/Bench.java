@@ -19,8 +19,7 @@ package com.github.subalakr.yasjl;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.text.DecimalFormat;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.subalakr.yasjl.Callbacks.JsonPointerCB1;
 import io.netty.buffer.ByteBuf;
@@ -37,7 +36,7 @@ public class Bench {
 	private ByteBufJsonParser parser;
 	private long totalDuration;
 	private long totalBytesRead;
-	private final AtomicInteger rowsEmitted;
+	private final AtomicLong rowsEmitted;
 	private long inJsonSz;
 
 	static {
@@ -50,7 +49,7 @@ public class Bench {
 		this.inJson = s.hasNext() ? s.next() : "";
 		parser = new ByteBufJsonParser();
 		this.iterations = iterations;
-		this.rowsEmitted = new AtomicInteger();
+		this.rowsEmitted = new AtomicLong();
 		this.inJsonSz = inJson.length();
 	}
 
