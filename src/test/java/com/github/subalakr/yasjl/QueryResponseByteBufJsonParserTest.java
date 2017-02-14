@@ -40,6 +40,7 @@ public class QueryResponseByteBufJsonParserTest {
 
     private boolean parseResults(String file) throws Exception {
         final Map<String, Integer> results = new HashMap<String, Integer>();
+        final ByteBuf inBuf = Unpooled.buffer();
         JsonPointer[] jsonPointers = {
                 new JsonPointer("/metrics/resultCount", new JsonPointerCB1() {
                     public void call(ByteBuf buf) {
@@ -75,7 +76,6 @@ public class QueryResponseByteBufJsonParserTest {
                         } else {
                             results.put("resultRows", 1);
                         }
-
                         buf.release();
                     }
                 }),
@@ -105,26 +105,11 @@ public class QueryResponseByteBufJsonParserTest {
         };
 
         String response = getResource(file);
-        ByteBuf buf = Unpooled.buffer();
-        parser.initialize(buf, jsonPointers);
-
-        int mid = response.length() / 2;
-        int quarter = mid / 2;
-        buf.writeBytes(response.substring(0, quarter).getBytes());
-        try {
-            parser.parse();
-        } catch (EOFException ex) {
-            //ignore EOF
-        }
-
-        buf.writeBytes(response.substring(quarter, mid).getBytes());
-        try {
-            parser.parse();
-        } catch (EOFException ex) {
-        }
-
-        buf.writeBytes(response.substring(mid, response.length()).getBytes());
+        parser.initialize(inBuf, jsonPointers);
+        inBuf.writeBytes(response.getBytes());
         parser.parse();
+
+        inBuf.discardReadBytes();
 
 
         if (results.containsKey("resultCount") && results.get("resultCount") > 0) {
@@ -144,11 +129,14 @@ public class QueryResponseByteBufJsonParserTest {
                 return false;
             }
         }
+        inBuf.release();
         return true;
     }
 
     private String parseValue(String path, String file) throws Exception {
         final StringBuilder sb = new StringBuilder();
+        ByteBuf inBuf = Unpooled.buffer();
+
         JsonPointer[] jsonPointers = {
                 new JsonPointer("/" + path, new JsonPointerCB1() {
                     public void call(ByteBuf buf) {
@@ -158,10 +146,11 @@ public class QueryResponseByteBufJsonParserTest {
                 }),
         };
         String response = getResource(file);
-        ByteBuf buf = Unpooled.buffer();
-        parser.initialize(buf, jsonPointers);
-        buf.writeBytes(response.getBytes());
+        parser.initialize(inBuf, jsonPointers);
+        inBuf.writeBytes(response.getBytes());
         parser.parse();
+        inBuf.discardReadBytes();
+        inBuf.release();
         return sb.toString();
     }
 
@@ -244,5 +233,16 @@ public class QueryResponseByteBufJsonParserTest {
     @Test
     public void testEscapedQuotes() throws Exception {
         assertTrue(parseResults("with_escaped_quotes.json"));
+    }
+
+
+    @Test
+    public void test3MB() throws Exception {
+        assertTrue(parseResults("3MB.json"));
+    }
+
+    @Test
+    public void test25MB() throws Exception {
+        assertTrue(parseResults("25MB.json"));
     }
 }
