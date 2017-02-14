@@ -28,7 +28,7 @@ import io.netty.util.ResourceLeakDetector;
  *
  * @author Subhashni Balakrishnan
  */
-public class BenchRowPerf {
+public class AutoBenchRowPerf {
 
     ByteBufJsonParser parser;
 
@@ -179,7 +179,7 @@ public class BenchRowPerf {
     }
 
     public static void main(String[] args) {
-        BenchRowPerf bench = new BenchRowPerf();
+        AutoBenchRowPerf bench = new AutoBenchRowPerf();
         bench.start();
     }
 }

@@ -57,3 +57,8 @@ size: 18.4 kB,      level-depth: 5,     time: 0ms
 size: 39.5 kB,      level-depth: 4,     time: 1ms
 size: 1.2 kB,       level-depth: 6,     time: 1ms
 ```
+Bench usage 
+```
+Bench <json-file> <iteration-count>
+```
+
