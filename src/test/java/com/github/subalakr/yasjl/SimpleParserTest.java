@@ -31,7 +31,7 @@ public class SimpleParserTest {
     }
 
     public Map<String, Object> writeSimpleJsonAndParse(String path) throws Exception {
-        ByteBuf buf = Unpooled.buffer();
+        ByteBuf inBuf = Unpooled.buffer();
 
         final Map<String, Object> results = new HashMap<String, Object>();
         final int[] parseCount = new int[1];
@@ -43,77 +43,87 @@ public class SimpleParserTest {
                 buf.release();
             }
         })};
-        parser.initialize(buf, jp);
+        parser.initialize(inBuf, jp);
 
         try {
-            buf.writeBytes("{\"foo\": [\"bar\", \"baz\"],".getBytes());
+            inBuf.writeBytes("{\"foo\": [\"bar\", \"baz\"],".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
         }
 
         try {
-            buf.writeBytes("\"\":0,".getBytes());
+            inBuf.writeBytes("\"\":0,".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
         }
 
         try {
-            buf.writeBytes("\"a/b\": 1,".getBytes());
+            inBuf.writeBytes("\"a/b\": 1,".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
         }
 
         try {
-            buf.writeBytes("\"c%d\": 2,".getBytes());
+            inBuf.writeBytes("\"c%d\": 2,".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
         }
 
         try {
-            buf.writeBytes("\"e^f\": 3,".getBytes());
+            inBuf.writeBytes("\"e^f\": 3,".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
         }
 
         try {
-            buf.writeBytes("\"g|h\": 4,".getBytes());
+            inBuf.writeBytes("\"g|h\": 4,".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
         }
 
         try {
-            buf.writeBytes("\"i\\j\": 5,".getBytes());
+            inBuf.writeBytes("\"i\\j\": 5,".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
         }
 
 
         try {
-            buf.writeBytes("\"k\\\"l\": 6,".getBytes());
+            inBuf.writeBytes("\"k\\\"l\": 6,".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
         }
 
         try {
-            buf.writeBytes("\" \": 7,".getBytes());
+            inBuf.writeBytes("\" \": 7,".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
 
         }
 
         try {
-            buf.writeBytes("\"m~n\": 8}".getBytes());
+            inBuf.writeBytes("\"m~n\": 8}".getBytes());
             parseCount[0]++;
             parser.parse();
+            inBuf.discardReadBytes();
         } catch(EOFException ex) {
 
         }
