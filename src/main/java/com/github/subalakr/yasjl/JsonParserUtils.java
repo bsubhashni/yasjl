@@ -58,18 +58,14 @@ public class JsonParserUtils {
     protected static final byte WS_CR = (byte)0x0D;
 
 
-    protected static boolean isNumber(byte value) {
+    protected static boolean isNumber(final byte value) {
         switch(value) {
             case JSON_MINUS:
             case JSON_ZERO:
             case JSON_PLUS:
                 return true;
             default:
-                if (value >= (byte)'1' && value <= (byte)'9') {
-                    return true;
-                } else {
-                    return false;
-                }
+                return value >= (byte) '1' && value <= (byte) '9';
         }
     }
 }

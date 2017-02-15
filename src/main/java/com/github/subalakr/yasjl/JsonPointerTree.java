@@ -26,7 +26,7 @@ import com.github.subalakr.yasjl.Callbacks.JsonPointerCB;
  */
 public class JsonPointerTree {
 
-    private Node root;
+    private final Node root;
     private boolean isRootAPointer;
 
     public JsonPointerTree() {
@@ -78,11 +78,7 @@ public class JsonPointerTree {
                 node = childMatch;
             }
         }
-        if (node.children == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return node.children != null;
     }
 
     public boolean isTerminalPath(JsonPointer jp) throws Exception {
@@ -116,9 +112,9 @@ public class JsonPointerTree {
      */
     class Node {
 
-        private String value;
+        private final String value;
         private List<Node> children;
-        private JsonPointerCB jsonPointerCB;
+        private final JsonPointerCB jsonPointerCB;
 
         public Node(String value, JsonPointerCB jsonPointerCB) {
             this.value = value;

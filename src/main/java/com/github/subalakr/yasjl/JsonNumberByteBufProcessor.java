@@ -32,18 +32,12 @@ public class JsonNumberByteBufProcessor implements ByteBufProcessor {
 
     //not verifying if valid
     public boolean process(byte value) throws Exception {
-        if (value == (byte)'e' || value == (byte)'E') {
+        if (value == (byte) 'e' || value == (byte) 'E') {
             return true;
         }
-        if (value >= (byte)'0' && value <= (byte)'9') {
+        if (value >= (byte) '0' && value <= (byte) '9') {
             return true;
         }
-        if (value == JSON_MINUS || value == JSON_PLUS) {
-            return true;
-        }
-        if (value == (byte)'.') {
-            return true;
-        }
-        return false;
+        return value == JSON_MINUS || value == JSON_PLUS || value == (byte) '.';
     }
 }

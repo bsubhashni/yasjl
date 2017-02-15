@@ -2,7 +2,6 @@ package com.github.subalakr.yasjl;
 
 import static org.junit.Assert.*;
 
-import java.io.EOFException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;

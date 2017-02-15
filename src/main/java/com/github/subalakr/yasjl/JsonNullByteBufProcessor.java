@@ -24,9 +24,9 @@ import io.netty.buffer.ByteBufProcessor;
  * @author Subhashni Balakrishnan
  */
 public class JsonNullByteBufProcessor implements ByteBufProcessor {
-    private final byte N1 = (byte)'n';
-    private final byte N2 = (byte)'u';
-    private final byte N3 = (byte)'l';
+    private static final byte N1 = (byte)'n';
+    private static final byte N2 = (byte)'u';
+    private static final byte N3 = (byte)'l';
     private byte lastValue;
 
     public JsonNullByteBufProcessor() {

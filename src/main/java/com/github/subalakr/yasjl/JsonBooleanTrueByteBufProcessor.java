@@ -24,10 +24,10 @@ import io.netty.buffer.ByteBufProcessor;
  * @author Subhashni Balakrishnan
  */
 public class JsonBooleanTrueByteBufProcessor implements ByteBufProcessor {
-    private final byte T1 = (byte)'t';
-    private final byte T2 = (byte)'r';
-    private final byte T3 = (byte)'u';
-    private final byte T4 = (byte)'e';
+    private static final byte T1 = (byte)'t';
+    private static final byte T2 = (byte)'r';
+    private static final byte T3 = (byte)'u';
+    private static final byte T4 = (byte)'e';
 
     private byte lastValue;
 

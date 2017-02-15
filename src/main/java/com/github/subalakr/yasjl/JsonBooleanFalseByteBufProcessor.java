@@ -24,11 +24,11 @@ import io.netty.buffer.ByteBufProcessor;
  * @author Subhashni Balakrishnan
  */
 public class JsonBooleanFalseByteBufProcessor implements ByteBufProcessor {
-    private final byte F1 = (byte)'f';
-    private final byte F2 = (byte)'a';
-    private final byte F3 = (byte)'l';
-    private final byte F4 = (byte)'s';
-    private final byte F5 = (byte)'e';
+    private static final byte F1 = (byte)'f';
+    private static final byte F2 = (byte)'a';
+    private static final byte F3 = (byte)'l';
+    private static final byte F4 = (byte)'s';
+    private static final byte F5 = (byte)'e';
 
     private byte lastValue;
 

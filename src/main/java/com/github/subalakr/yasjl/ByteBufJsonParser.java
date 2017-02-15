@@ -43,15 +43,15 @@ public class ByteBufJsonParser {
     private JsonPointerTree tree;
     private Stack<JsonLevel> levelStack;
     private JsonLevel currentLevel;
-    private JsonWhiteSpaceByteBufProcessor wsProcessor;
-    private JsonStringByteBufProcessor stProcessor;
-    private JsonArrayByteBufProcessor arProcessor;
-    private JsonObjectByteBufProcessor obProcessor;
-    private JsonNullByteBufProcessor nullProcessor;
-    private JsonBOMByteBufProcessor bomProcessor;
-    private JsonNumberByteBufProcessor numProcessor;
-    private JsonBooleanTrueByteBufProcessor trueProcessor;
-    private JsonBooleanFalseByteBufProcessor falseProcessor;
+    private final JsonWhiteSpaceByteBufProcessor wsProcessor;
+    private final JsonStringByteBufProcessor stProcessor;
+    private final JsonArrayByteBufProcessor arProcessor;
+    private final JsonObjectByteBufProcessor obProcessor;
+    private final JsonNullByteBufProcessor nullProcessor;
+    private final JsonBOMByteBufProcessor bomProcessor;
+    private final JsonNumberByteBufProcessor numProcessor;
+    private final JsonBooleanTrueByteBufProcessor trueProcessor;
+    private final JsonBooleanFalseByteBufProcessor falseProcessor;
     private byte currentChar;
     private boolean startedStreaming;
 
@@ -401,9 +401,9 @@ public class ByteBufJsonParser {
      */
     class JsonLevel {
 
-        private Stack<Mode> modes;
+        private final Stack<Mode> modes;
         private ByteBuf currentValue;
-        private JsonPointer jsonPointer;
+        private final JsonPointer jsonPointer;
         private boolean isHashValue;
         private boolean isArray;
         private int arrayIndex;
