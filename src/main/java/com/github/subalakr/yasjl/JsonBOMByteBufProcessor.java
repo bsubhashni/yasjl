@@ -24,9 +24,9 @@ import io.netty.buffer.ByteBufProcessor;
  * @author Subhashni Balakrishnan
  */
 public class JsonBOMByteBufProcessor implements ByteBufProcessor {
-    private final byte BOM1 = (byte)0xEF;
-    private final byte BOM2 = (byte)0xBB;
-    private final byte BOM3 = (byte)0xBF;
+    private static final byte BOM1 = (byte)0xEF;
+    private static final byte BOM2 = (byte)0xBB;
+    private static final byte BOM3 = (byte)0xBF;
     private byte lastValue;
 
     public JsonBOMByteBufProcessor() {

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.github.subalakr.yasjl;
 
 import java.util.ArrayList;
@@ -21,8 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.subalakr.yasjl.Callbacks.JsonPointerCB;
-import com.github.subalakr.yasjl.Callbacks.JsonPointerCB1;
-import com.github.subalakr.yasjl.Callbacks.JsonPointerCB2;
 
 /**
  * Represents a pointer
@@ -30,35 +27,39 @@ import com.github.subalakr.yasjl.Callbacks.JsonPointerCB2;
  * @author Subhashni Balakrishnan
  */
 public class JsonPointer {
+
+    public static final int MAX_NESTING_LEVEL = 31;
+    private static final String ROOT_TOKEN = "";
+
     private List<String> refTokens;
     private JsonPointerCB jsonPointerCB;
 
-    protected JsonPointer(){
+    protected JsonPointer() {
         this.refTokens = new ArrayList<String>();
-        this.addToken(""); //token for root
+        this.addToken(ROOT_TOKEN);
     }
 
     public JsonPointer(final List<String> refTokens) {
-        this.refTokens = new ArrayList(refTokens);
+        this.refTokens = new ArrayList<String>(refTokens);
     }
 
     public JsonPointer(final String path) {
-        parseComponents(path);
+        this(path, null);
     }
 
-    public JsonPointer(final String path, JsonPointerCB jsonPointerCB) {
+    public JsonPointer(final String path, final JsonPointerCB jsonPointerCB) {
         parseComponents(path);
         this.jsonPointerCB = jsonPointerCB;
     }
 
-    public void parseComponents(String path) {
+    private void parseComponents(final String path) {
         this.refTokens = new ArrayList<String>();
         //replace ~1 by /
 
         //split by path each separated by "/"
         String[] tokens = path.split("/");
 
-        if (tokens.length > 31) {
+        if (tokens.length > MAX_NESTING_LEVEL) {
             throw new IllegalArgumentException("path contains too many levels of nesting");
         }
 
@@ -87,26 +88,22 @@ public class JsonPointer {
         return this.jsonPointerCB;
     }
 
-    protected void jsonPointerCB(JsonPointerCB jsonPointerCB) {
+    protected void jsonPointerCB(final JsonPointerCB jsonPointerCB) {
         this.jsonPointerCB = jsonPointerCB;
     }
 
-    private String getPath() {
+    private String path() {
         StringBuilder sb = new StringBuilder();
         for(String refToken:this.refTokens) {
             sb.append("/");
             sb.append(refToken);
         }
-        return sb.substring(1).toString();
+        return sb.substring(1);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("JsonPointer{path=");
-        sb.append(getPath());
-        sb.append("}");
-        return sb.toString();
+        return "JsonPointer{path=" + path() + "}";
     }
 
 }

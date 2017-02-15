@@ -28,7 +28,7 @@ import io.netty.buffer.ByteBufProcessor;
 public class JsonArrayByteBufProcessor implements ByteBufProcessor {
     private boolean isString;
     private int count;
-    private JsonStringByteBufProcessor stProcessor;
+    private final JsonStringByteBufProcessor stProcessor;
 
     public JsonArrayByteBufProcessor(JsonStringByteBufProcessor stProcessor) {
         this.count = 1;
@@ -52,11 +52,7 @@ public class JsonArrayByteBufProcessor implements ByteBufProcessor {
                     return true;
                 case C_SQUARE:
                     this.count--;
-                    if (count == 0) {
-                        return false;
-                    } else {
-                        return true;
-                    }
+                    return count != 0;
                 case JSON_ST:
                     this.isString = true;
                     return true;

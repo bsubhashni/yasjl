@@ -7,10 +7,11 @@
     <groupId>com.github.subalakr</groupId>
     <artifactId>yasjl</artifactId>
     <version>0.1-SNAPSHOT</version>
+
     <dependencies>
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
+            <artifactId>netty-buffer</artifactId>
             <version>4.0.43.Final</version>
         </dependency>
         <dependency>
