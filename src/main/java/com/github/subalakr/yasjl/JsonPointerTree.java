@@ -131,13 +131,13 @@ public class JsonPointerTree {
             return child;
         }
 
-        private boolean isIndex(String value) {
-            try {
-                Integer.parseInt(value);
-                return true;
-            } catch (NumberFormatException ex) {
-                return false;
+        boolean isIndex(String s) {
+            int len = s.length();
+            for (int a = 0; a < len; a++) {
+                if (a == 0 && s.charAt(a) == '-') continue;
+                if (!Character.isDigit(s.charAt(a))) return false;
             }
+            return true;
         }
 
         public Node match(String value) {
