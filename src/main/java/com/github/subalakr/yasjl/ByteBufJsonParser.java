@@ -315,14 +315,14 @@ public class ByteBufJsonParser {
 
         int lastValidIndex = this.content.forEachByte(processor);
         if (lastValidIndex == -1) {
-            if (mode != JSON_NUMBER_VALUE) {
-                throw new EOFException("Needs more input (Level: " + level.jsonPointer().toString() + ")");
-            } else {
+            if (mode == Mode.JSON_NUMBER_VALUE && this.content.readableBytes() > 2) {
                 length = 1;
                 ByteBuf slice = this.content.slice(readerIndex - 1, length);
                 level.setCurrentValue(slice.copy(), length);
                 //no need to skip here
                 level.emitJsonPointerValue();
+            } else {
+                throw new EOFException("Needs more input (Level: " + level.jsonPointer().toString() + ")");
             }
         } else {
             if (mode == Mode.JSON_OBJECT_VALUE ||
