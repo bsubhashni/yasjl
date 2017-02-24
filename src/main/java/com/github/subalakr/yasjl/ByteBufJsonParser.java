@@ -81,7 +81,8 @@ public class ByteBufJsonParser {
 
     public void parse() throws Exception {
         if (levelStack.empty() && !startedStreaming) {
-            switch (this.content.readByte()) {
+            readNextChar(null);
+            switch (this.currentChar) {
                 case (byte) 0xEF:
                     pushLevel(Mode.BOM);
                     break;
@@ -387,7 +388,7 @@ public class ByteBufJsonParser {
     private void readNextChar(JsonLevel level) throws Exception {
         int readerIndex = this.content.readerIndex();
         int lastWsIndex = this.content.forEachByte(wsProcessor);
-        if (lastWsIndex == -1) {
+        if (lastWsIndex == -1 && level != null) {
             throw new EOFException("Needs more input (Level: " + level.jsonPointer().toString() + ")");
         }
         if (lastWsIndex > readerIndex) {
