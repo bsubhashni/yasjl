@@ -277,7 +277,7 @@ public class ByteBufJsonParser {
         }
     }
 
-    private void readValue(JsonLevel level) throws Exception {
+    private void readValue(JsonLevel level) throws EOFException {
 
         int readerIndex = this.content.readerIndex();
         ByteBufProcessor processor = null;

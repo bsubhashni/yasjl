@@ -54,7 +54,6 @@ public class JsonPointer {
 
     private void parseComponents(final String path) {
         this.refTokens = new ArrayList<String>();
-        //replace ~1 by /
 
         //split by path each separated by "/"
         String[] tokens = path.split("/");
@@ -63,6 +62,7 @@ public class JsonPointer {
             throw new IllegalArgumentException("path contains too many levels of nesting");
         }
 
+        //replace ~1 and ~0
         for (int i=0; i < tokens.length; i++) {
             tokens[i] = tokens[i].replace("~1","/").replace("~0","~");
         }

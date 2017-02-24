@@ -63,7 +63,7 @@ public class JsonPointerTree {
         return pathDoesNotExist;
     }
 
-    public boolean isIntermediaryPath(JsonPointer jp) throws Exception {
+    public boolean isIntermediaryPath(JsonPointer jp) {
         List<String> jpRefTokens = jp.refTokens();
         int jpSize = jpRefTokens.size();
         if (jpSize == 1) {
@@ -81,7 +81,7 @@ public class JsonPointerTree {
         return node.children != null;
     }
 
-    public boolean isTerminalPath(JsonPointer jp) throws Exception {
+    public boolean isTerminalPath(JsonPointer jp) {
         List<String> jpRefTokens = jp.refTokens();
         int jpSize = jpRefTokens.size();
 
