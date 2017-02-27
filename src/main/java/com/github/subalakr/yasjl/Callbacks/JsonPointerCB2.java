@@ -23,5 +23,5 @@ import io.netty.buffer.ByteBuf;
  * @author Subhashni Balakrishnan
  */
 public interface JsonPointerCB2 extends JsonPointerCB {
-	void call(JsonPointer jsonPointer, ByteBuf value);
+    void call(JsonPointer jsonPointer, ByteBuf value);
 }

@@ -166,7 +166,6 @@ public class ByteBufJsonParser {
         }
     }
 
-
     private void readObject(JsonLevel level) throws Exception {
         while (true) {
             readNextChar(level);
@@ -382,7 +381,6 @@ public class ByteBufJsonParser {
             this.content.skipBytes(lastBOMIndex - readerIndex + 1);
         }
         this.levelStack.pop();
-        this.content.discardReadBytes();
     }
 
     private void readNextChar(JsonLevel level) throws Exception {

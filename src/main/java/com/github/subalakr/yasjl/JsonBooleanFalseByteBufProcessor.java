@@ -67,6 +67,6 @@ public class JsonBooleanFalseByteBufProcessor implements ByteBufProcessor {
                 }
                 break;
         }
-        throw new IllegalStateException("Invalid json");
+        return false;
     }
 }
